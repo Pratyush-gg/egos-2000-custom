@@ -1,4 +1,4 @@
-/*
+    /*
  * (C) 2025, Cornell University
  * All rights reserved.
  *
@@ -31,13 +31,13 @@ char* egos_binaries[] = {"./qemu/egos.bin",
                          "../build/release/sys_file.elf",
                          "../build/release/sys_shell.elf",
                          "./screenshots/Bohr.bmp" /* for the VGA demo */};
-#define EGOS_BIN_NUM ((sizeof(egos_binaries) / sizeof(char*)))
+#define EGOS_BIN_NUM ((sizeof(egos_binaries) / sizeof(char*)-1))
 
-char bin_dir[256] = "./   6 ../   0 ";
+char bin_dir[1024] = "./   7 ../   0 ";
 char* contents[]  = {
-    "./   0 ../   0 home/   1 bin/   6 ",
+    "./   0 ../   0 home/   1 bin/   7 ",
     "./   1 ../   0 yunhao/   2 rvr/   3 yacqub/   4 ",
-    "./   2 ../   1 README   5 ",
+    "./   2 ../   1 README   5  TRY 6 ",
     "./   3 ../   1 ",
     "./   4 ../   1 ",
     "With only 2000 lines of code, egos-2000 implements boot loader, SD card "
@@ -45,7 +45,8 @@ char* contents[]  = {
      "exception handling, preemptive scheduler, system call, file system, "
      "shell, an Ethernet/UDP demo, several user commands, and the mkfs tool. "
      "Moreover, the EGOS book (https://egos.fun) contains 9 course projects.",
-    bin_dir};
+     "new file\n file is new \n tesing",
+     bin_dir};
 #define BIN_DIR_INODE ((sizeof(contents) / sizeof(char*)) - 1)
 
 char inode[SIZE_2MB], tmp[512];
@@ -99,6 +100,7 @@ int main() {
     for (uint ino = 0; ino < BIN_DIR_INODE; ino++) {
         printf("[INFO] Load ino=%d, %ld bytes\n", ino, strlen(contents[ino]));
         strncpy(inode, contents[ino], BLOCK_SIZE);
+        printf("ino%d\n",ino);
         filesys->write(filesys, ino, 0, (void*)inode);
     }
 
@@ -123,7 +125,9 @@ int main() {
             sprintf(tmp, "%s%4d ", ep->d_name, app_ino++);
             strcat(bin_dir, tmp);
         }
+        
     closedir(dp);
+
     filesys->write(filesys, BIN_DIR_INODE, 0, (void*)bin_dir);
     printf("[INFO] Load ino=%ld, %s\n", BIN_DIR_INODE, bin_dir);
 
